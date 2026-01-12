@@ -1,0 +1,32 @@
+import { createContext, useState, useEffect } from "react";
+
+export const ProductContext = createContext();
+
+export function ProductProvider({ children }) {
+	const [products, setProducts] = useState([]);
+	const [error, setError] = useState(null);
+	const [loading, setLoading] = useState(true);
+	// Using json-server package - this URL is not going to work with real API ( obviously )
+	useEffect(() => {
+		const fetchData = async () => {
+			try {
+				const res = await fetch(`http://localhost:3000/products`);
+				if (!res.ok) {
+					throw new Error("Failed to fetch data");
+				}
+				const data = await res.json();
+				setProducts(data);
+			} catch (err) {
+				setError(err.message);
+			} finally {
+				setLoading(false);
+			}
+		};
+		fetchData();
+	}, []);
+    
+    return( <ProductContext.Provider value={{products,loading,error}}>
+    {children}
+    </ProductContext.Provider>
+)
+}
