@@ -4,9 +4,7 @@ import shoppingCart from "../assets/cart-shopping-thin.svg";
 import CartDropdown from "./CartDropdown";
 
 const Navigation = () => {
-const {cart, previewCart,cartCount} = useContext(CartContext);
-const {dropdownActive,setDropdownActive}=useContext(CartContext)
-
+const {cart, previewCart,cartCount,dropdownActive,setDropdownActive} = useContext(CartContext);
 
     return (
 <>
