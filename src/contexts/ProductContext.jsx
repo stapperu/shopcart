@@ -14,7 +14,7 @@ export function ProductProvider({ children }) {
 					throw new Error("Failed to fetch data");
 				}
 				const data = await res.json();
-				setProducts(data);
+				setProducts(data.products || []);
 			} catch (err) {
 				setError(err.message);
 			} finally {
