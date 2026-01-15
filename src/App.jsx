@@ -1,8 +1,8 @@
-import Navigation from "./components/Navigation"
-import Footer from "./components/Footer";
-import ProductsList from "./components/ProductsList";
+import Navigation from "./components/Navigation.jsx"
+import Footer from "./components/Footer.jsx";
+import ProductsList from "./components/ProductsList.jsx";
 import { useContext } from "react";
-import { CartContext } from "./contexts/CartContext";
+import { CartContext } from "./contexts/CartContext.jsx";
 
 
 function App() {

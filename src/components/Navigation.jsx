@@ -1,7 +1,7 @@
 import { useContext } from "react";
-import {  CartContext } from "../contexts/CartContext";
+import {  CartContext } from "../contexts/CartContext.jsx";
 import shoppingCart from "../assets/cart-shopping-thin.svg";
-import CartDropdown from "./CartDropdown";
+import CartDropdown from "./CartDropdown.jsx";
 
 const Navigation = () => {
 const {cart,dropdownActive,setDropdownActive} = useContext(CartContext);
