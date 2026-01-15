@@ -10,7 +10,7 @@ export function ProductProvider({ children }) {
 	useEffect(() => {
 		const fetchData = async () => {
 			try {
-				const res = await fetch(`http://localhost:3000/products`);
+				const res = await fetch(`/data/products.json`);
 				if (!res.ok) {
 					throw new Error("Failed to fetch data");
 				}
