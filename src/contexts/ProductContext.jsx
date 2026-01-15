@@ -9,7 +9,7 @@ export function ProductProvider({ children }) {
 	useEffect(() => {
 		const fetchData = async () => {
 			try {
-				const res = await fetch(`${import.meta.env.VITE_BASE_URL}/data/db.json`);
+				const res = await fetch(`/shopcart/data/db.json`);
 				if (!res.ok) {
 					throw new Error("Failed to fetch data");
 				}
