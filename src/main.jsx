@@ -4,6 +4,7 @@ import "./index.css";
 import { ProductProvider } from  "./contexts/ProductContext";
 import { CartProvider } from "./contexts/CartContext";
 import App from "./App.jsx";
+import { CartProvider } from "./contexts/CartContext.jsx"
 
 
 
