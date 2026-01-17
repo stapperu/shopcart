@@ -3,6 +3,7 @@ import { createContext, useState, useEffect } from "react";
 export const CartContext = createContext();
 
 export function CartProvider({ children }) {
+	
 	const [cart, setCart] = useState(() => {
 		const storedCart = localStorage.getItem("cart");
 		return storedCart ? JSON.parse(storedCart):[];
@@ -13,7 +14,7 @@ export function CartProvider({ children }) {
 		localStorage.setItem("cart", JSON.stringify(cart));
 	}, [cart]);
 
-	const addToCart = (product) => {
+const addToCart = (product) => {
 		setCart((prevCart) => {
 			const existing = prevCart.find((item) => item.id === product.id);
 			if (existing) {
