@@ -20,7 +20,7 @@ const {addToCart}=useContext(CartContext);
         <h3 className="text-sm md:text-base m-2">{product.description}</h3>
         <h3 className="text-base font-bold text-blue-600">{product.rating} / 5 *</h3>
         <img className="h-5/6 w-full bg-cover pt-2" src={`./${product.image}`} alt={`${product.name} photo`}/>
-        <h3 className="text-xl md:text-2xl pt-6 text-blue-600 font-bold p-3">${product.price}</h3>
+        <h3 className="text-xl md:text-2xl pt-6 text-blue-600 font-bold p-3">${new Intl.NumberFormat('pl-PL').format(product.price)}</h3>
        <button className={`p-3 m-auto w-5/6 border border-blue-950 bg-blue-500 text-white font-bold uppercase disabled:bg-gray-300 disabled:border-0`} disabled={product.quantity < 1}
   onClick={product.quantity < 1 ? undefined : ()=>addToCart(product)}>Add to Cart</button>
        <p className={`${product.quantity<1 ? "text-red-800/80 text-xl": "text-blue-900/60"} m-3`} >{product.quantity > 70 ? "Full stock" : product.quantity > 30?"Medium stock": product.quantity<1 ? "Out of stock" : "Low on stock" }</p> 

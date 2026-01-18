@@ -3,7 +3,7 @@ import { createContext, useState, useEffect } from "react";
 export const CartContext = createContext();
 
 export function CartProvider({ children }) {
-	
+	const [cartTotal,setCartTotal] = useState(0);
 	const [cart, setCart] = useState(() => {
 		const storedCart = localStorage.getItem("cart");
 		return storedCart ? JSON.parse(storedCart):[];
@@ -12,6 +12,12 @@ export function CartProvider({ children }) {
 
 	useEffect(() => {
 		localStorage.setItem("cart", JSON.stringify(cart));
+	}, [cart]);
+
+	useEffect(() => {
+				setCartTotal( new Intl.NumberFormat("pl-PL").format(
+							cart.reduce((acc, p) => acc + p.qty * Number(p.price), 0),
+						));
 	}, [cart]);
 
 const addToCart = (product) => {
@@ -37,6 +43,8 @@ const addToCart = (product) => {
 				cart,
 				setCart,
 				addToCart,
+				cartTotal,
+				setCartTotal,
 				dropdownActive,
 				setDropdownActive,
 				removeFromCart,

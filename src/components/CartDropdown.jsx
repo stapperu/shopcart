@@ -1,30 +1,51 @@
-import { useState, useContext, useEffect } from "react";
+import { useRef, useState, useContext, useEffect } from "react";
 import { CartContext } from "../contexts/CartContext.jsx";
 import Checkout from "./Checkout.jsx";
 import { Link } from "react-router";
+import { useLocation } from "react-router";
 
 const CartDropdown = () => {
-	const { cart, setCart, dropdownActive, setDropdownActive, removeFromCart } =
+	const { cart, setCart, cartTotal,setCartTotal, dropdownActive, setDropdownActive, removeFromCart } =
 		useContext(CartContext);
-	let cartTotal = 0;
-	const [selectDisplay, setSelectDisplay] = useState("");
 
-	useEffect(() => {
-		if (cart.length === 0 && dropdownActive) {
-			setDropdownActive(false);
-		}
-	}, [cart, dropdownActive, setDropdownActive]);
+	const [selectField, setselectField] = useState("");
 
 	const changeQuantity = (productId, newQty) => {
 		const qty = Math.max(1, Number(newQty));
 		setCart((prevCart) =>
-			prevCart.map((item) => (item.id === productId ? { ...item, qty } : item))
+			prevCart.map((item) => (item.id === productId ? { ...item, qty } : item)),
 		);
 	};
+	useEffect(() => {
+		if (cart.length === 0 ) {
+			setDropdownActive(false);
+		}
+	}, [cart]);
 
-	return (
-		<>
-			<div className="absolute top-0 right-0  p-3 m-4 mt-20 bg-white border border-gray-500">
+	const dropdownRef = useRef(null);
+	useEffect(() => {
+		if (!dropdownActive) return;
+		const handleClickOutside = (e) => {
+			if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+				setDropdownActive(false);
+			}
+		};
+		document.addEventListener("mousedown", handleClickOutside);
+
+		return () => {
+			document.removeEventListener("mousedown", handleClickOutside);
+		};
+
+	
+	}, [dropdownActive, setDropdownActive]);
+
+		
+	return dropdownActive ? (
+	
+			<div
+				className="absolute top-0 right-0  p-3 m-4 mt-20 bg-white border border-gray-500"
+				ref={dropdownRef}
+			>
 				{cart.map((product) => {
 					return (
 						<div className="mb-4 p-3 text-2xl" key={product.id}>
@@ -49,11 +70,11 @@ const CartDropdown = () => {
 											className="w-8 content-center focus:bg-gray-150 hover:bg-gray-250 opacity-20"
 											name="qty"
 											id={product.id}
-											value={selectDisplay}
+											value={selectField}
 											onChange={(e) => {
 												if (e.target.value !== "") {
 													changeQuantity(product.id, e.target.value);
-													setSelectDisplay("");
+													setselectField("");
 												}
 											}}
 										>
@@ -80,18 +101,17 @@ const CartDropdown = () => {
 				<div className="flex justify-between">
 					<p className="font-bold text-2xl text-blue-800 ">
 						Total:{" "}
-						{cart.reduce((acc, p) => acc + p.qty * p.price, 0).toFixed(2)}{" "}
+						{cartTotal}{" "}
 					</p>
 					<Link
-						to="/checkout"
+						to="/checkout" onClick={(e)=>{e.stopPropagation();setDropdownActive(false)}}
 						className="px-5 pb-1 text-2xl font-bold bg-blue-800 text-white"
 					>
 						Checkout
 					</Link>
 				</div>
 			</div>
-		</>
-	);
+	) : null;
 };
 
 export default CartDropdown;

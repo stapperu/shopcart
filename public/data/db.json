@@ -64,7 +64,7 @@
 			"id": 7,
 			"name": "Empty&Shallow CO. Cardboard Cut-out",
 			"description": "Refer to product's name.",
-			"price": "2.500.000.000",
+			"price": 2500000000,
 			"quantity": 2,
 			"category": "Cardboard",
 			"rating": 0.7,
