@@ -5,7 +5,7 @@ export function ProductProvider({ children }) {
 	const [products, setProducts] = useState([]);
 	const [error, setError] = useState(null);
 	const [loading, setLoading] = useState(true);
-	// Using json-server package - this URL is not going to work with real API ( obviously )
+
 	useEffect(() => {
 		const fetchData = async () => {
 			try {

@@ -3,6 +3,9 @@ import Footer from "./components/Footer.jsx";
 import ProductsList from "./components/ProductsList.jsx";
 import { useContext } from "react";
 import { CartContext } from "./contexts/CartContext.jsx";
+import Checkout from "./components/Checkout.jsx";
+import { Route,Routes } from "react-router";
+
 
 
 function App() {
@@ -11,7 +14,10 @@ function App() {
 	return (
 	<>
 		<Navigation/>
-		<ProductsList/>
+		<Routes>
+			<Route path='/' element={<ProductsList/>} />
+			<Route path="/checkout" element={<Checkout />} />
+		</Routes>
 		<Footer/>
 		</>
 	);

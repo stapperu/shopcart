@@ -2,8 +2,11 @@ import { useContext } from "react";
 import {  CartContext } from "../contexts/CartContext.jsx";
 import shoppingCart from "../assets/cart-shopping-thin.svg";
 import CartDropdown from "./CartDropdown.jsx";
+import ProductsList from "./ProductsList.jsx";
+import { useLocation,Link } from "react-router-dom";
 
 const Navigation = () => {
+    const location=useLocation();
 const {cart,dropdownActive,setDropdownActive} = useContext(CartContext);
 
 const cartCounter=cart.reduce((acc,item)=>acc+item.qty,0);
@@ -18,6 +21,12 @@ const cartCounter=cart.reduce((acc,item)=>acc+item.qty,0);
 {dropdownActive ? <CartDropdown/> : null}
 </div>
 
+{location.pathname !== '/'? <Link
+						to="/"
+						className="px-5 pb-1 text-2xl font-bold bg-blue-800 text-white"
+					>
+						 Go Back
+					</Link> :"" }
 </>
 
       );
