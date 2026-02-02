@@ -34,7 +34,7 @@
 			"id": 4,
 			"name": "Gaming Mouse",
 			"description": "Ergonomic mouse with customizable RGB lighting and 6 DPI levels.",
-			"price": 29.99,
+			"price":29.99,
 			"quantity": 50,
 			"category": "Accessories",
 			"rating": 4.3,

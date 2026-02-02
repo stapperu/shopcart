@@ -1,57 +1,131 @@
-import { createContext, useState, useEffect } from "react";
+import { createContext, useState, useEffect, useContext } from "react";
+import { ProductContext } from "./ProductContext";
 
 export const CartContext = createContext();
 
 export function CartProvider({ children }) {
-	const [cartTotal,setCartTotal] = useState(0);
-	const [cart, setCart] = useState(() => {
-		const storedCart = localStorage.getItem("cart");
-		return storedCart ? JSON.parse(storedCart):[];
-	});
-	const [dropdownActive, setDropdownActive] = useState(false);
+  const { localStock, setLocalStock } = useContext(ProductContext);
 
-	useEffect(() => {
-		localStorage.setItem("cart", JSON.stringify(cart));
-	}, [cart]);
+  const [cartTotal, setCartTotal] = useState(0);
+  const [cart, setCart] = useState(() => {
+    const storedCart = localStorage.getItem("cart");
+    return storedCart ? JSON.parse(storedCart) : [];
+  });
+  const [dropdownActive, setDropdownActive] = useState(false);
 
-	useEffect(() => {
-				setCartTotal( new Intl.NumberFormat("pl-PL").format(
-							cart.reduce((acc, p) => acc + p.qty * Number(p.price), 0),
-						));
-	}, [cart]);
+  useEffect(() => {
+    localStorage.setItem("cart", JSON.stringify(cart));
+  }, [cart]);
 
-const addToCart = (product) => {
-		setCart((prevCart) => {
-			const existing = prevCart.find((item) => item.id === product.id);
-			if (existing) {
-				return prevCart.map((item) =>
-					item.id === product.id ? { ...item, qty: item.qty + 1 } : item
-				);
-			}
-			return [...prevCart, { ...product, qty: 1 }];
-		});
-	};
+  useEffect(() => {
+    setCartTotal(
+      new Intl.NumberFormat("pl-PL").format(
+        cart.reduce((acc, p) => acc + p.qty * Number(p.price), 0),
+      ),
+    );
+  }, [cart]);
 
-	const removeFromCart = (product) => {
-		setCart((prevCart) => prevCart.filter((item) => item.id !== product.id));
-		// setCart(cart.filter((item)=>item.id !== product.id));
-	};
+  const addToCart = (product, newQty = 1) => {
+  setCart(prevCart => {
+    const existing = prevCart.find(item => item.id === product.id);
+    const currentQty = existing ? existing.qty : 0;
+    const available = localStock[product.id] ?? product.quantity ?? 0;
 
-	return (
-		<CartContext.Provider
-			value={{
-				cart,
-				setCart,
-				addToCart,
-				cartTotal,
-				setCartTotal,
-				dropdownActive,
-				setDropdownActive,
-				removeFromCart,
-             
-			}}
-		>
-			{children}
-		</CartContext.Provider>
-	);
+    const finalQty = currentQty + newQty;
+
+    if (finalQty > available) {
+      alert(`Cannot add ${newQty} – only ${available - currentQty} more available`);
+      return prevCart;
+    }
+
+    let newCart;
+    if (existing) {
+      newCart = prevCart.map(item =>
+        item.id === product.id ? { ...item, qty: item.qty + newQty } : item
+      );
+    } else {
+      newCart = [...prevCart, { ...product, qty: newQty, quantity: product.quantity }];
+    }
+
+    return newCart;
+  });
+
+  // Update localStock AFTER
+  setLocalStock(prev => ({
+    ...prev,
+    [product.id]: Math.max(0, (prev[product.id] ?? 0) - newQty)
+  }));
+};
+
+const changeQuantity = (product, newQty) => {
+  let diff = 0;
+
+  setCart(prevCart => {
+    return prevCart.map(item => {
+      if (item.id !== product.id) return item;
+
+      const oldQty = item.qty;
+      const nQty = Math.max(1, Number(newQty));
+
+      // Fresh available from localStock + what we already have in cart
+      const currentStock = localStock[product.id] ?? item.quantity ?? 0;
+      const combinedAvailable = currentStock + oldQty;
+
+      if (nQty > combinedAvailable) {
+        alert(`Cannot set to ${nQty} – only ${combinedAvailable} total available`);
+        return item; // keep old qty
+      }
+
+      diff = oldQty - nQty; // positive = add back to stock
+
+      return { ...item, qty: nQty };
+    });
+  });
+
+  // Update localStock AFTER cart is updated
+  if (diff !== 0) {
+    setLocalStock(prev => ({
+      ...prev,
+      [product.id]: Math.max(0, (prev[product.id] ?? 0) + diff)
+    }));
+  }
+};
+
+  const removeFromCart = (product) => {
+    let qtyToReturn = 0;
+
+    setCart((prevCart) => {
+      const item = prevCart.find(i => i.id === product.id);
+      if (!item) return prevCart;
+
+      qtyToReturn = item.qty;
+
+      return prevCart.filter(i => i.id !== product.id);
+    });
+
+    if (qtyToReturn > 0) {
+      setLocalStock(prev => ({
+        ...prev,
+        [product.id]: (prev[product.id] ?? 0) + qtyToReturn
+      }));
+    }
+  };
+
+  return (
+    <CartContext.Provider
+      value={{
+        cart,
+        setCart,
+        addToCart,
+        changeQuantity,
+        cartTotal,
+        setCartTotal,
+        dropdownActive,
+        setDropdownActive,
+        removeFromCart,
+      }}
+    >
+      {children}
+    </CartContext.Provider>
+  );
 }

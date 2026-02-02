@@ -6,6 +6,18 @@ export function ProductProvider({ children }) {
 	const [error, setError] = useState(null);
 	const [loading, setLoading] = useState(true);
 
+	//initialized, then fills localStock with a copy of products state so it can track and modify the amount of products moved to the cart without impacting the real stock
+	const [localStock, setLocalStock] = useState({});
+
+	useEffect(() => {
+		if (products.length === 0) return;
+		const stockCopy = products.reduce((localstock, product) => {
+			localstock[product.id] = product.quantity;
+			return localstock;
+		}, {});
+		setLocalStock(stockCopy);
+	}, [products]);
+
 	useEffect(() => {
 		const fetchData = async () => {
 			try {
@@ -23,9 +35,10 @@ export function ProductProvider({ children }) {
 		};
 		fetchData();
 	}, []);
-    
-    return( <ProductContext.Provider value={{products,loading,error}}>
-    {children}
-    </ProductContext.Provider>
-)
+
+	return (
+		<ProductContext.Provider value={{ products, localStock, setLocalStock }}>
+			{children}
+		</ProductContext.Provider>
+	);
 }
