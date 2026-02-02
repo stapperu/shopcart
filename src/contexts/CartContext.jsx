@@ -5,7 +5,6 @@ export const CartContext = createContext();
 
 export function CartProvider({ children }) {
   const { localStock, setLocalStock } = useContext(ProductContext);
-
   const [cartTotal, setCartTotal] = useState(0);
   const [cart, setCart] = useState(() => {
     const storedCart = localStorage.getItem("cart");
@@ -24,6 +23,16 @@ export function CartProvider({ children }) {
       ),
     );
   }, [cart]);
+
+  useEffect(() => {
+  setLocalStock(prev => {
+    let newStock = { ...prev };
+    cart.forEach(item => {
+      newStock[item.id] = (newStock[item.id] ?? 0) - item.qty;
+    });
+    return newStock;
+  });
+}, []);
 
   const addToCart = (product, newQty = 1) => {
   setCart(prevCart => {

@@ -4,15 +4,6 @@ import Checkout from "./Checkout.jsx";
 import { Link } from "react-router";
 import { useLocation } from "react-router";
 
-	function useDebounce(value,delay){
-		const [debounced,setDebounced]=useState(value);
-		useEffect(()=>{
-			const timer = setTimeout(()=>setDebounced(value),delay);
-			return ()=>clearTimeout(timer);
-		}, [value,delay]);
-		return debounced;
-	}
-	
 	const CartDropdown = () => {
 		const {
 			cart,
@@ -78,7 +69,6 @@ import { useLocation } from "react-router";
 											}
 										}} onKeyDown={(e) => {
 											if (e.key==="Enter") {
-												changeQuantity(product, e.target.value);
 												e.target.blur();
 											}
 										}}
