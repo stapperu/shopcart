@@ -67,31 +67,31 @@ export function CartProvider({ children }) {
 };
 
 const changeQuantity = (product, newQty) => {
-  let diff = 0;
+  const nQty = Math.max(1, Number(newQty));
 
-  setCart(prevCart => {
-    return prevCart.map(item => {
-      if (item.id !== product.id) return item;
+  // Read fresh values from current state (before any update)
+  const item = cart.find(i => i.id === product.id);
+  if (!item) return;
 
-      const oldQty = item.qty;
-      const nQty = Math.max(1, Number(newQty));
+  const oldQty = item.qty;
+  const currentStock = localStock[product.id] ?? item.quantity ?? 0;
+  const combinedAvailable = currentStock + oldQty;
 
-      // Fresh available from localStock + what we already have in cart
-      const currentStock = localStock[product.id] ?? item.quantity ?? 0;
-      const combinedAvailable = currentStock + oldQty;
+  if (nQty > combinedAvailable) {
+    alert(`Cannot set to ${nQty} – only ${currentStock} remaining in stock (you already have ${oldQty} in cart)`);
+    return; // no update at all
+  }
 
-      if (nQty > combinedAvailable) {
-        alert(`Cannot set to ${nQty} – only ${combinedAvailable} total available`);
-        return item; // keep old qty
-      }
+  const diff = oldQty - nQty;
 
-      diff = oldQty - nQty; // positive = add back to stock
+  // Now update cart
+  setCart(prevCart =>
+    prevCart.map(i =>
+      i.id === product.id ? { ...i, qty: nQty } : i
+    )
+  );
 
-      return { ...item, qty: nQty };
-    });
-  });
-
-  // Update localStock AFTER cart is updated
+  // Update localStock if needed
   if (diff !== 0) {
     setLocalStock(prev => ({
       ...prev,
